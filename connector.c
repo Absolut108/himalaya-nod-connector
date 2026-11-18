@@ -35,11 +35,11 @@ static int valid_server_char(unsigned char c) {
 static char *server_value(const char *value) {
   const char *host = value;
   if (strncmp(value, "imaps://", 8) == 0) host = value + 8;
-  else if (strstr(value, "://")) fail("HIMALAYA_IMAP_URL must use IMAPS, not plaintext IMAP");
+  else if (strstr(value, "://")) fail("HIMALAYA_IMAP_URL_ID must use IMAPS, not plaintext IMAP");
   size_t n = strlen(host);
   if (!n || n > 255 || strchr(host, '@') || strchr(host, '/') || strchr(host, '?') || strchr(host, '#'))
-    fail("HIMALAYA_IMAP_URL must be a host and optional port, without credentials or a path");
-  for (size_t i = 0; i < n; i++) if (!valid_server_char((unsigned char)host[i])) fail("Invalid character in HIMALAYA_IMAP_URL");
+    fail("HIMALAYA_IMAP_URL_ID must be a host and optional port, without credentials or a path");
+  for (size_t i = 0; i < n; i++) if (!valid_server_char((unsigned char)host[i])) fail("Invalid character in HIMALAYA_IMAP_URL_ID");
   if (host[0] == '.' || host[n-1] == '.' || host[0] == '-') fail("Invalid IMAPS host");
   return strdup(host);
 }
@@ -109,10 +109,10 @@ int main(int argc, char **argv) {
     if (argc == 4) mailbox=argv[3]; if (!safe_mailbox(mailbox)) fail("Invalid mailbox name");
   } else fail("Supported commands: check, mailboxes, envelopes [mailbox] [page] [page-size], message <id> [mailbox]");
 
-  const char *email=need("HIMALAYA_EMAIL"), *username=need("HIMALAYA_USERNAME"), *password=need("HIMALAYA_PASSWORD");
-  if (!safe_email(email)) fail("HIMALAYA_EMAIL must be an email address");
+  const char *email=need("HIMALAYA_EMAIL_ID"), *username=need("HIMALAYA_USERNAME_ID"), *password=need("HIMALAYA_PASSWORD");
+  if (!safe_email(email)) fail("HIMALAYA_EMAIL_ID must be an email address");
   if (strlen(username)>512 || strlen(password)>4096) fail("A connection field is too long");
-  char *server=server_value(need("HIMALAYA_IMAP_URL"));
+  char *server=server_value(need("HIMALAYA_IMAP_URL_ID"));
   char *qemail=toml_quote(email), *quser=toml_quote(username), *qpass=toml_quote(password), *qserver=toml_quote(server);
 
   snprintf(tempdir,sizeof(tempdir),"/tmp/himalaya-nod-XXXXXX");
